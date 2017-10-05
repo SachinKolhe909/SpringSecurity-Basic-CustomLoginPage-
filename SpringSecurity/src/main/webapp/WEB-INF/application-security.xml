@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+    
+    <!-- <http auto-config="true"> -->
+    
+    <http use-expressions="true">
+    
+    <!-- 
+    use-expression true to secure individual URLs. these expressions can be eg. hasRole([])
+    
+     -->
+    
+    <!-- what does auto-config include? 
+    	The auto-config sttribute, as we have used it above, is just a shorthand syntax for:
+    	
+    <http>
+	    <form-login /> setting up form login page
+	    <http-basic /> setting up basic authentication
+	    <logout /> logout handling services
+  	</http>
+    -->
+    
+    <!-- custom login form example : start -->
+    
+    <!-- We are allowing anonymous access on /login so that users can authenticate. We are also securing everything else. -->
+     <intercept-url pattern="/login*" access="isAnonymous()" />
+     <intercept-url pattern="/**" access="isAuthenticated()"/>
+      
+    <form-login
+    	login-page="/login"
+    	default-target-url="/admin2"
+    	login-processing-url="/j_spring_security_check"
+    	authentication-failure-url="/login?error"
+    	username-parameter="username"
+    	password-parameter="password"
+    />
+    <logout logout-success-url="/login?logout"/>
+    
+    <csrf disabled="true"/>
+    
+    <!-- custom login form example : end -->
+   </http>
+   
+   <!-- Using the <authentication-provider> element means that the user information will be used by the authentication manager to process authentication requests. 
+   You can have multiple <authentication-provider> elements to define different authentication sources and each will be consulted in turn. -->
+   
+    <authentication-manager>
+    	<authentication-provider>
+			<user-service>
+				<user name="bill" password="abc123" authorities="ROLE_USER"/>
+				<user name="admin" password="root123" authorities="ROLE_ADMIN"/>
+				<user name="dba" password="root123" authorities="ROLE_ADMIN,ROLE_DBA"/>
+			</user-service>    	
+			
+    	</authentication-provider>
+    </authentication-manager>
+</beans:beans>
